@@ -1,0 +1,8 @@
+[package]
+name = "pe"
+version = "0.1.0"
+authors = ["Hugh Richardson <hughrichardson@live.com>"]
+
+[dependencies]
+num = "0.1.40"
+num-traits = "0.1.40"
