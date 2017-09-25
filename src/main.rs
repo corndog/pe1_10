@@ -9,22 +9,16 @@ fn main() {
 	assert_eq!(pe1(), 233168);
 	assert_eq!(pe2(4000000), 4613732);
 	assert_eq!(pe3(), 6857);
-	assert_eq!(pe4_(), 906609);
-//	assert_eq!(pe5(), 232792560); //slow, not so much in release!
+	assert_eq!(pe4(), 906609);
+	assert_eq!(pe5(), 232792560);
 	assert_eq!(pe6(), 25164150);
 	assert_eq!(pe7(), 104743);
 	assert_eq!(pe8().to_str_radix(10), String::from("23514624000"));
 	assert_eq!(pe9(), 31875000);
-//	assert_eq!(pe10(), 142913828922); // slow
-	println!("pe1 {}", pe1());
-	println!("pe2 {}", pe2(4000000));
-	println!("pe8 {}", pe8());
-	//println!("pe4 {}", pe4());
-	//println!("pe4_ {}", pe4_());
-	//println!("pe6 {}", pe6());
-	//println!("pe9 {}", pe9());
-	//println!("pe10 {}", pe10());
+	assert_eq!(pe10(), 142913828922); 
 }
+
+
 
 // PE1: find the sum of all the multiples of 3 or 5 below 1000
 // 233168
@@ -48,23 +42,7 @@ fn pe2(limit: u64) -> u64 { // limit = 4000000
 }
 
 
-// PE3: What is the largest prime factor of 600851475143
-// 6857
-
-// is x divisible by anthing in xs
-fn has_divisor(x: u64, xs: &Vec<u64>) -> bool {
-	xs.iter().any(|y| x % y == 0)
-}
-
-// make sure to call with at least one odd prime already added!
-fn add_next_prime(primes_found: &mut Vec<u64>) {
-	let mut next = *primes_found.last().unwrap() + 1;
-	while has_divisor(next, &primes_found) {
-		next += 1;
-	};
-	primes_found.push(next);
-}
-
+// largest prime factor of 600851475143
 fn pe3() -> u64 {
 	// accumulate a list of primes. Use them to look for the next prime,
 	// which is next number not divisible by any of them
@@ -87,21 +65,26 @@ fn pe3() -> u64 {
 	next_prime
 }
 
+// is x divisible by anthing in xs
+fn has_divisor(x: u64, xs: &Vec<u64>) -> bool {
+	xs.iter().any(|y| x % y == 0)
+}
+
+// make sure to call with at least one odd prime already added!
+fn add_next_prime(primes_found: &mut Vec<u64>) {
+	let mut next = *primes_found.last().unwrap() + 1;
+	while has_divisor(next, &primes_found) {
+		next += 1;
+	};
+	primes_found.push(next);
+}
+
 // PE4: Find the largest palindrome made from the product of two 3-digit numbers
 // 906609
 fn is_palindrome(x: i32) -> bool {
 	let str:String = x.to_string();
 	let rev:String = str.chars().rev().collect();
 	str == rev
-}
-
-fn pe4_() -> i32 {
-	(1..1000).fold(1, |accx,x|
-		(x..1000).fold(accx, |accy, y| {
-			let z = x * y;
-			if z > accy && is_palindrome(z) {z} else {accy}
-		})
-	)
 }
 
 fn pe4() -> i32 {
@@ -229,22 +212,27 @@ fn pe9() -> u64 {
 	res
 }
 
-
-//Find the sum of all the primes below two million
-// slow but whatever
+// sum of primes below 2 million
 fn pe10() -> u64 {
-	let mut primes = vec![2,3,5,7,11];
-	let mut sum:u64 = primes.iter().sum();
-	let mut next: u64;
-	loop {
-		add_next_prime(&mut primes);
-		next = *primes.last().unwrap();
-		if next < 2000000 {
-			sum = sum + next;
-		}
-		else {
-			break;
+	primes_below(2000000).iter().sum()
+}
+
+
+// prime numbers up to x
+// simplest sieve of eratosthenes
+fn primes_below(x: u64) -> Vec<u64> {
+	let limit = x as usize;
+	let mut primes = vec![];
+	let mut xs = vec![true; limit];
+	for i in 2..limit {
+		if xs[i] {
+			primes.push(i as u64);
+			let mut j = i * i;
+			while j < limit {
+				xs[j] = false;
+				j += i
+			}
 		}
 	}
-	sum
+	primes
 }
