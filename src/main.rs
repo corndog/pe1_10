@@ -1,10 +1,3 @@
-extern crate num;
-extern crate num_traits;
-
-use num::bigint::BigInt;
-use num_traits::{Zero, One};
-use num::bigint::ToBigInt;
-
 fn main() {
 	assert_eq!(pe1(), 233168);
 	assert_eq!(pe2(4000000), 4613732);
@@ -13,7 +6,7 @@ fn main() {
 	assert_eq!(pe5(), 232792560);
 	assert_eq!(pe6(), 25164150);
 	assert_eq!(pe7(), 104743);
-	assert_eq!(pe8().to_str_radix(10), String::from("23514624000"));
+	assert_eq!(pe8(), 23514624000);
 	assert_eq!(pe9(), 31875000);
 	assert_eq!(pe10(), 142913828922); 
 }
@@ -22,7 +15,7 @@ fn main() {
 
 // PE1: find the sum of all the multiples of 3 or 5 below 1000
 // 233168
-fn pe1() -> i32 {
+fn pe1() -> u32 {
 	(1..1000)
 	.filter(|x| x % 3 == 0 || x % 5 == 0)
 	.sum()
@@ -103,14 +96,14 @@ fn pe4() -> i32 {
 
 // PE5: What is the smallest positive number that is evenly divisible by all of the numbers from 1 to 20
 // 232792560
-fn divisible_by_all(x: i64, xs: &Vec<i64>) -> bool {
+fn divisible_by_all(x: u64, xs: &Vec<u64>) -> bool {
 	xs.iter().all(|y| x % y == 0)
 }
 
-fn pe5() -> i64 {
+fn pe5() -> u64 {
 	// no need to have numbers less than 11, if divisible by 20 also divisible by 10 duh.
-	let nums: Vec<i64> = (11..21).rev().collect::<Vec<i64>>();
-	let mut i:i64 = 1;
+	let nums: Vec<u64> = (11..21).rev().collect::<Vec<u64>>();
+	let mut i: u64 = 1;
 	while !divisible_by_all(i, &nums) {
 		i += 1;
 	}
@@ -138,7 +131,7 @@ fn pe7() -> u64 {
 }
 
 // pe 8 thirteen adjacent digits in the 1000-digit number that have the greatest product
-fn pe8() -> BigInt {
+fn pe8() -> u64 {
 	let num_string = "73167176531330624919225119674426574742355349194934\
 	96983520312774506326239578318016984801869478851843\
 	85861560789112949495459501737958331952853208805511\
@@ -166,30 +159,29 @@ fn pe8() -> BigInt {
 		nums[i] = c.to_digit(10).unwrap();
 	}
 
-	//let one:BigInt = ToBigInt::to_bigint(&1).unwrap();
-	let mut max:BigInt = Zero::zero();
+	let mut max: u64 = 0;
 	let mut i = 0; // trailing pointer, j will be leading pointer
 	let mut next:u32;
-	let mut prod:BigInt = One::one();
+	let mut prod: u64 = 1;
 
 	for j in 0..999 { //
 		next = nums[j];
 		// next number is zero, reset running product to 1, bump trailing pointer to the next number
 		if next == 0 {
-			prod = One::one();
+			prod = 1;
 			i = j + 1;
 		}
 		else {
 			// if window is maxed out, divide by number at trailing pointer
 			if j - i > 12 {
-				prod = prod / nums[i].to_bigint().unwrap();
+				prod = prod / nums[i] as u64;
 				i += 1;
 			}
 			// multiply by next number
-			prod = prod * next.to_bigint().unwrap();
+			prod = prod * next as u64;
 
 			if prod > max {
-				max = prod.clone(); // hmm
+				max = prod;
 			}
 		}
 	}
